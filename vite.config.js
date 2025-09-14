@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     host: true, // allow external access
-    allowedHosts: ["icei.iitdh.ac.in"], // add your domain here
+    allowedHosts: ["election.iitdh.ac.in"], // add your domain here
     port: 5173,
   },
 })
