@@ -9,14 +9,12 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="p-6">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/voting" element={<Voting />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/signin" element={<SignIn />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/voting" element={<Voting />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/signin" element={<SignIn />} />
+      </Routes>
     </div>
   )
 }
