@@ -36,10 +36,7 @@ export default function Voting() {
   };
 
   const handleVoteSelect = (positionId, candidateId) => {
-    setSelectedVotes((prev) => ({
-      ...prev,
-      [positionId]: candidateId,
-    }));
+    setSelectedVotes((prev) => ({ ...prev, [positionId]: candidateId }));
   };
 
   const handleNext = () => setCurrentIndex((prev) => prev + 1);
@@ -79,9 +76,10 @@ export default function Voting() {
     }
   };
 
+  // OTP screen
   if (!positions.length && !hasVoted) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-black to-pink-900 px-4 sm:px-6 lg:px-12 py-12 text-white">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-black to-pink-900 px-6 py-12 text-white">
         <h1 className="text-4xl md:text-5xl pb-5 mb-5 font-extrabold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg text-center">
           🗳️ Voting Portal
         </h1>
@@ -93,6 +91,7 @@ export default function Voting() {
               <input
                 key={idx}
                 type="text"
+                autoComplete="off"
                 maxLength="1"
                 value={otp[idx] || ""}
                 onChange={(e) => {
@@ -113,7 +112,7 @@ export default function Voting() {
                   }
                 }}
                 id={`otp-${idx}`}
-                className="w-12 sm:w-14 h-12 sm:h-14 text-center text-lg rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 outline-none"
+                className="w-12 h-12 text-center text-lg rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-pink-400 outline-none"
               />
             ))}
           </div>
@@ -126,104 +125,112 @@ export default function Voting() {
             {loading ? "Verifying..." : "Verify OTP"}
           </button>
 
-          {message && <p className="text-red-400 text-sm mt-2 text-center break-words">{message}</p>}
+          {message && <p className="text-red-400 text-sm mt-2 text-center">{message}</p>}
         </div>
       </div>
     );
   }
 
+  // Voting poster carousel
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-black to-pink-900 px-4 sm:px-6 lg:px-12 py-12 text-white overflow-x-hidden relative">
-      <h1 className="text-4xl md:text-5xl font-extrabold pb-5 mb-10 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg text-center z-20 relative">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-black to-pink-900 px-6 pt-32 text-white relative overflow-hidden">
+      <h1 className="text-4xl md:text-5xl font-extrabold pb-5 mb-7 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg text-center z-20 relative">
         🗳️ Voting Portal
       </h1>
 
-      <div className="relative w-full max-w-5xl h-[700px] flex justify-center items-center overflow-hidden">
+      <div className="relative w-full flex justify-center items-center h-[520px] overflow-hidden">
         {positions.map((position, index) => {
           const offset = index - currentIndex;
+          if (offset < -2 || offset > 2) return null; // only 2 left + 2 right
 
           let translateX = 0;
           let scale = 1;
           let opacity = 1;
-          let zIndex = 50 - Math.abs(offset);
-
-          if (offset < 0) {
-            // previous slabs on left
-            translateX = -50 + offset * 10;
-            scale = 0.9;
-            opacity = 0.4;
-          } else if (offset > 0) {
-            // upcoming slabs on right, always slightly visible
-            translateX = 30 + offset * 10; // peek effect
-            scale = 0.9;
-            opacity = 0.4;
-          }
 
           if (offset === 0) {
             translateX = 0;
             scale = 1;
             opacity = 1;
-            zIndex = 100;
+          } else if (Math.abs(offset) === 1) {
+            translateX = offset * 250; // fixed peek for first
+            scale = 0.85;
+            opacity = 0.95;
+          } else if (Math.abs(offset) === 2) {
+            translateX = offset * 250; // fixed peek for second
+            scale = 0.7;
+            opacity = 0.8;
           }
 
           return (
             <div
               key={position.id}
-              className="absolute top-0 w-full transition-all duration-500 ease-in-out"
+              className="absolute top-0 transition-all duration-500 ease-in-out"
               style={{
-                transform: `translateX(${translateX}%) scale(${scale})`,
-                zIndex,
+                transform: `translateX(${translateX}px) scale(${scale})`,
+                zIndex: offset === 0 ? 100 : 50 - Math.abs(offset),
                 opacity,
-                backdropFilter: "blur(25px)",
-                backgroundColor: "rgba(255,255,255,0.05)",
-                borderRadius: "2rem",
-                border: "1px solid rgba(255,255,255,0.2)",
+                backdropFilter: "blur(30px)",
+                backgroundColor: "rgba(255,255,255,0.08)",
+                borderRadius: "1.5rem",
+                border: "1px solid rgba(255,255,255,0.25)",
                 padding: "1.5rem",
+                minWidth: "400px", // variable width
+                maxWidth: "90%",
               }}
             >
               <h2 className="text-2xl md:text-3xl font-bold text-pink-400 text-center mb-6">{position.name}</h2>
 
-              <div className="grid justify-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                {position.candidates.map((c) => (
-                  <label
-                    key={c.id}
-                    className={`flex flex-col items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-white/10 transition
-                      ${selectedVotes[position.id] === c.id ? "border-purple-500 bg-white/10" : "border-white/20"}`}
-                    style={{ aspectRatio: "1 / 1", minHeight: "280px" }}
-                  >
-                    <img
-                      src={c["photo-url"]}
-                      alt={c.name}
-                      className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white/30 mb-3"
-                    />
-                    <div className="flex items-center gap-2 mb-2 flex-wrap justify-center">
-                      <p className="font-bold text-lg sm:text-2xl text-center">{c.name}</p>
-                      {c["manifesto-url"] && (
-                        <a
-                          href={c["manifesto-url"]}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-3 py-1 text-pink-400 font-semibold hover:bg-white/20 transition"
-                        >
-                          <FiFileText />
-                        </a>
-                      )}
-                    </div>
-                    <input
-                      type="radio"
-                      name={position.id}
-                      value={c.id}
-                      checked={selectedVotes[position.id] === c.id}
-                      onChange={() => handleVoteSelect(position.id, c.id)}
-                      className="hidden"
-                    />
-                  </label>
-                ))}
+              <div className="flex gap-6 overflow-x-auto">
+                {position.candidates.map((c) => {
+                  const isSelected = selectedVotes[position.id] === c.id;
+                  return (
+                    <label
+                      key={c.id}
+                      className={`flex flex-col items-center justify-between p-4 rounded-lg cursor-pointer transition ${
+                        isSelected
+                          ? "border-2 border-purple-500 bg-white/20 backdrop-blur-md"
+                          : "border border-white/20 hover:bg-white/10"
+                      }`}
+                      style={{ width: "200px", minWidth: "150px", height: "250px" }}
+                    >
+                      <img
+                        src={c["photo-url"]}
+                        alt={c.name}
+                        className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white/30 mb-3"
+                      />
+                      <div className="flex items-center gap-1 flex-wrap justify-center">
+                        <p className="font-bold text-lg text-center">{c.name}</p>
+                        {c["manifesto-url"] && (
+                          <a
+                            href={c["manifesto-url"]}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-1 bg-white/10 border border-white/20 rounded-full px-3 py-1 text-pink-400 font-semibold hover:bg-white/20 transition"
+                          >
+                            <FiFileText />
+                          </a>
+                        )}
+                      </div>
+                      <input
+                        type="radio"
+                        name={position.id}
+                        value={c.id}
+                        checked={isSelected}
+                        onChange={() => handleVoteSelect(position.id, c.id)}
+                        className="hidden"
+                      />
+                    </label>
+                  );
+                })}
 
+                {/* NOTA */}
                 <label
-                  className={`flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer hover:bg-white/10 transition
-                    ${selectedVotes[position.id] === "NOTA" ? "border-purple-500 bg-white/10" : "border-white/20"}`}
-                  style={{ aspectRatio: "1 / 1", minHeight: "280px" }}
+                  className={`flex flex-col items-center justify-center p-4 rounded-lg cursor-pointer transition ${
+                    selectedVotes[position.id] === "NOTA"
+                      ? "border-2 border-purple-500 bg-white/20 backdrop-blur-md"
+                      : "border border-white/20 hover:bg-white/10"
+                  }`}
+                  style={{ width: "200px", minWidth: "150px", height: "250px" }}
                 >
                   <p className="font-bold text-4xl mb-2">NOTA</p>
                   <input
@@ -237,11 +244,12 @@ export default function Voting() {
                 </label>
               </div>
 
-              <div className="flex justify-between mt-4 flex-wrap gap-4">
+              {/* Buttons */}
+              <div className="flex justify-between mt-6 flex-wrap gap-4">
                 <button
                   onClick={handlePrev}
                   disabled={currentIndex === 0}
-                  className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 px-6 py-3 rounded-xl font-bold shadow-lg transition-all duration-300 disabled:opacity-50"
+                  className="bg-gradient-to-r from-purple-500 to-purple-700 px-6 py-3 rounded-xl font-bold shadow-lg transition disabled:opacity-50"
                 >
                   Previous
                 </button>
@@ -250,7 +258,7 @@ export default function Voting() {
                   <button
                     onClick={handleNext}
                     disabled={!selectedVotes[position.id]}
-                    className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 px-6 py-3 rounded-xl font-bold shadow-lg transition-all duration-300 ml-auto"
+                    className="bg-gradient-to-r from-purple-500 to-purple-700 px-6 py-3 rounded-xl font-bold shadow-lg transition ml-auto"
                   >
                     Next
                   </button>
@@ -258,7 +266,7 @@ export default function Voting() {
                   <button
                     onClick={handleSubmitVotes}
                     disabled={!selectedVotes[position.id] || loading}
-                    className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 px-6 py-3 rounded-xl font-bold shadow-lg transition-all duration-300 ml-auto"
+                    className="bg-gradient-to-r from-purple-500 to-purple-700 px-6 py-3 rounded-xl font-bold shadow-lg transition ml-auto"
                   >
                     {loading ? "Submitting..." : "Cast Votes"}
                   </button>
@@ -271,13 +279,13 @@ export default function Voting() {
 
       {hasVoted && (
         <div className="mt-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 shadow-lg text-center">
-          <p className="text-green-400 font-bold text-xl break-words">
+          <p className="text-green-400 font-bold text-xl">
             ✅ You have successfully submitted your votes! Reloading...
           </p>
         </div>
       )}
 
-      {message && !hasVoted && <p className="mt-4 text-center font-semibold text-red-400 break-words">{message}</p>}
+      {message && !hasVoted && <p className="mt-4 text-center font-semibold text-red-400">{message}</p>}
     </div>
   );
 }
