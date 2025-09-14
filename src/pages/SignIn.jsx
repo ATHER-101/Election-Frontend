@@ -40,45 +40,51 @@ export default function SignIn() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md bg-white shadow-md rounded-2xl p-8">
-        <h1 className="text-2xl font-bold text-center mb-6 text-blue-600">
-          Admin Sign In
-        </h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-black to-pink-900 text-white px-6 pt-28 pb-12">
+      <h1 className="text-4xl md:text-5xl font-extrabold mb-10 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
+        🗳️ Admin Portal
+      </h1>
+      <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_25px_rgba(236,72,153,0.25)] rounded-3xl p-8">
+
         {error && (
-          <div className="bg-red-100 text-red-600 p-2 rounded mb-4 text-sm">
+          <div className="bg-red-500/10 border border-red-500/40 text-red-400 p-3 rounded-lg mb-6 text-sm text-center">
             {error}
           </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Username
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 outline-none"
+              placeholder="Enter your username"
               required
             />
           </div>
+
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Password / Admin Key
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-400 outline-none"
+              placeholder="Enter your password"
               required
             />
           </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>

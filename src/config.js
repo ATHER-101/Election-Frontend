@@ -1,1 +1,1 @@
-export const API_BASE_URL = "https://kj1ds184-3000.inc1.devtunnels.ms"
+export const API_BASE_URL = "https://election.iitdh.ac.in/api/"
